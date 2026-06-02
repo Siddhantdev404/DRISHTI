@@ -1,1 +1,3 @@
 D:\DRISHTI\android\app\src\main\cpp\CMakeLists.txt
+D:\DRISHTI\node_modules\react-native-quick-sqlite\android\build\generated\source\codegen\jni\CMakeLists.txt
+D:\DRISHTI\node_modules\react-native-worklets-core\android\build\generated\source\codegen\jni\CMakeLists.txt

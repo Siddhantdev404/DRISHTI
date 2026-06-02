@@ -5,6 +5,7 @@ cmake_policy(SET CMP0009 NEW)
 # input_SRC at D:/DRISHTI/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake:38 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/android/app/build/generated/rncli/src/main/jni/*.cpp")
 set(OLD_GLOB
+  "D:/DRISHTI/android/app/build/generated/rncli/src/main/jni/rncli.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
@@ -15,6 +16,56 @@ endif()
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/android/app/src/main/cpp/*.cpp")
 set(OLD_GLOB
   "D:/DRISHTI/android/app/src/main/cpp/face_auth_plugin.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/RNQuickSQLite-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/*.cpp")
+set(OLD_GLOB
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/ComponentDescriptors.cpp"
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/EventEmitters.cpp"
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/Props.cpp"
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/RNQuickSQLiteJSI-generated.cpp"
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/ShadowNodes.cpp"
+  "D:/DRISHTI/node_modules/react-native-quick-sqlite/android/build/generated/source/codegen/jni/react/renderer/components/RNQuickSQLite/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/RNWorkletsSpec-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/*.cpp")
+set(OLD_GLOB
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/ComponentDescriptors.cpp"
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/EventEmitters.cpp"
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/Props.cpp"
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/RNWorkletsSpecJSI-generated.cpp"
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/ShadowNodes.cpp"
+  "D:/DRISHTI/node_modules/react-native-worklets-core/android/build/generated/source/codegen/jni/react/renderer/components/RNWorkletsSpec/States.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

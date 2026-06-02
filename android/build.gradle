@@ -13,10 +13,49 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.2.1")
+        classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
 
+apply plugin: "com.facebook.react.rootproject"
+
 allprojects {
-    // Kept blank to respect settings.gradle dependencyResolutionManagement policies
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+subprojects { project ->
+    def applyNdkVersion = {
+        if (rootProject.ext.has("ndkVersion")) {
+            project.android {
+                ndkVersion rootProject.ext.ndkVersion
+            }
+        }
+    }
+    project.plugins.withId("com.android.library", applyNdkVersion)
+    project.plugins.withId("com.android.application", applyNdkVersion)
+
+    // Add this block right here to bypass the React Native Framework API warnings
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            freeCompilerArgs += [
+                "-Xopt-in=com.facebook.react.common.annotations.FrameworkAPI",
+                "-Xopt-in=kotlin.RequiresOptIn"
+            ]
+        }
+    }
+    
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "androidx.camera") {
+                details.useVersion "1.3.4"
+            }
+            if (details.requested.group == "androidx.media3") {
+                details.useVersion "1.3.1"
+            }
+        }
+    }
 }

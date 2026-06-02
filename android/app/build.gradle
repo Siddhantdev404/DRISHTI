@@ -4,6 +4,11 @@ plugins {
     id("com.facebook.react")
 }
 
+react {
+    /* Keep any of your pre-existing custom paths inside here if they exist */
+    entryFile = file("../App.tsx")
+}
+
 android {
     namespace = "com.drishti"
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -29,8 +34,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
+            path "src/main/cpp/CMakeLists.txt"
         }
     }
 
@@ -47,7 +51,9 @@ android {
     }
 
     packagingOptions {
-        pickFirsts += "lib/arm64-v8a/libc++_shared.so"
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 
     compileOptions {
@@ -64,3 +70,9 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
+
+
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+

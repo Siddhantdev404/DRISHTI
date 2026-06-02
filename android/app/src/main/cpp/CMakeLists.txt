@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-
+project(Project)
 # 1. Include the official React Native configuration script.
 # This macro automatically sets up the default project target under the name: ${PROJECT_NAME}
 include(${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
@@ -40,3 +40,7 @@ target_link_libraries(${PROJECT_NAME}
     log
     fbjni::fbjni
 )
+
+# 5. Force 16 KB page alignment for Android 15+ kernel compatibility.
+# Without this, libProject.so may fail to load on devices with 16 KB page sizes.
+target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")

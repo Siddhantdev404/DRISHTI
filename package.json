@@ -9,11 +9,17 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.74.2",
-    "react-native-quick-sqlite": "^8.2.7"
+    "react-native-quick-sqlite": "8.2.7",
+    "react-native-vision-camera": "3.9.2",
+    "react-native-worklets-core": "^1.1.0"
   },
   "devDependencies": {
     "@react-native-community/cli": "13.6.9",
     "@react-native-community/cli-platform-android": "13.6.9",
+    "@react-native/metro-config": "^0.85.3",
     "typescript": "5.4.5"
+  },
+  "overrides": {
+    "yargs": "^17.7.2"
   }
 }
