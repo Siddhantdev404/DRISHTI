@@ -1,0 +1,19 @@
+{
+  "name": "drishti",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.74.2",
+    "react-native-quick-sqlite": "^8.2.7"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "13.6.9",
+    "@react-native-community/cli-platform-android": "13.6.9",
+    "typescript": "5.4.5"
+  }
+}
