@@ -11,11 +11,16 @@ import com.facebook.react.uimanager.ViewManager
  * Add this to your MainApplication.kt getPackages() list:
  *   packages.add(FaceAuthPackage())
  */
+import com.mrousavy.camera.frameprocessor.FrameProcessorPluginRegistry
+
 class FaceAuthPackage : ReactPackage {
 
     override fun createNativeModules(
         reactContext: ReactApplicationContext
     ): List<NativeModule> {
+        FrameProcessorPluginRegistry.addFrameProcessorPlugin("processFaceAuthFrame") { proxy, options ->
+            FaceAuthFrameProcessorPlugin(proxy, options)
+        }
         val module = FaceAuthModule(reactContext)
         return listOf(module)
     }

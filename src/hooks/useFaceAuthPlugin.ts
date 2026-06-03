@@ -1,21 +1,42 @@
-// hooks/useFaceAuthPlugin.ts
-import { useEffect, useRef } from 'react';
-import { VisionCameraProxy, type Frame } from 'react-native-vision-camera';
-import type { FaceAuthResult } from '../../shared/FaceAuthResult';
+import { type Frame } from 'react-native-vision-camera';
 
-// The plugin is registered by M1's JSIInstaller.mm / FaceAuthPackage.kt
-// under the name 'drishti_face_auth'. This name must match M1's
-// VisionCameraProxy.initFrameProcessorPlugin('drishti_face_auth') call.
-const plugin = VisionCameraProxy.initFrameProcessorPlugin('drishti_face_auth', {});
+// The actual return type matches FaceAuthResultJS from native/FaceAuthEngine
+export interface FaceAuthResult {
+  livenessState: number;
+  activeChallenge: number;
+  matchScore: number;
+  matchedId: string;
+  nativeFps: number;
+  inferenceMs: number;
+  frameCount: number;
+  errorCode: string;
+  // ... other properties
+}
+
+declare global {
+  var processVisionFrame: (frame: Frame) => FaceAuthResult;
+}
 
 export function useFaceAuthPlugin() {
   return {
-    processFrame: (frame: Frame): FaceAuthResult => {
+    processFrame: (frame: Frame): FaceAuthResult | null => {
       'worklet';
-      // Runs on VisionCamera's CameraQueue thread — NOT the JS thread.
-      // Direct C++ call via JSI. Zero serialization. Zero bridge hop.
-      const raw = plugin!.call(frame) as unknown as FaceAuthResult;
-      return raw;
+      if (typeof processVisionFrame !== 'undefined') {
+        const result = processVisionFrame(frame);
+        
+        if (result) {
+          console.log(
+            `[FrameProcessor] WxH: ${frame.width}x${frame.height} | ` +
+            `Orientation: ${frame.orientation} | ` +
+            `FPS: ${result.nativeFps} | ` +
+            `Liveness: ${result.livenessState} | ` +
+            `MatchScore: ${result.matchScore}`
+          );
+        }
+        
+        return result;
+      }
+      return null;
     }
   };
 }

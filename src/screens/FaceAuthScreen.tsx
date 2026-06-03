@@ -33,12 +33,13 @@ import {
   View,
   ActivityIndicator,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
-import { Camera, useFrameProcessor } from 'react-native-vision-camera';
+import { Camera, useCameraDevice, useCameraFormat, Frame } from 'react-native-vision-camera';
 import { useCameraStream } from '../hooks/useCameraStream';
 import { useFaceAuth } from '../hooks/useFaceAuth';
-import { processFaceAuthFrame } from '../native/FrameProcessorPlugin';
-import { LivenessState, ChallengeType } from '../native/FaceAuthEngine';
+import { myFrameProcessor } from '../native/MyFrameProcessor';
+import { LivenessState, ChallengeType, FaceAuthResultJS } from '../native/FaceAuthEngine';
 import { DatabaseService } from '../database/DatabaseService';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -49,7 +50,13 @@ const RING_BORDER = 4;
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function FaceAuthScreen() {
-  const { hasPermission, device, checkPermissionsDirectly } = useCameraStream();
+  const {
+    hasPermission,
+    device,
+    format,
+    checkPermissionsDirectly,
+  } = useCameraStream();
+
   const {
     // State
     isEngineRunning,
@@ -77,30 +84,32 @@ export default function FaceAuthScreen() {
   useEffect(() => {
     if (!device || !hasPermission) return;
 
-    // Start the background inference thread.
-    // This spins up the C++ pipeline: FrameMailbox → AdaptiveClahe → LivenessFSM
+    // Start the C++ thread when the camera screen opens
     const started = startEngine();
     if (started) {
       console.log('[DRISHTI] Inference engine started');
     }
 
     return () => {
-      // Gracefully shut down the inference thread on screen unmount
+      // Stop the thread when leaving the screen
       stopEngine();
     };
   }, [device, hasPermission, startEngine, stopEngine]);
 
-  // ── Frame Processor: Runs on native camera thread via worklet ─────────
+  console.log("[DRISHTI] FaceAuthScreen rendered. global.processVisionFrame:", !!global.processVisionFrame);
 
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    // Post the raw Y-plane ArrayBuffer directly into the C++ FrameMailbox.
-    // The inference thread picks it up and runs the full pipeline.
-    // Results are NOT returned here — they're polled by useFaceAuth.
-    processFaceAuthFrame(frame);
+  const frameProcessor = useMemo(() => {
+    return {
+      frameProcessor: myFrameProcessor,
+      type: 'frame-processor'
+    };
   }, []);
 
-  // ── Handle Liveness Pass: Extract embedding when verification succeeds ──
+  useEffect(() => {
+    console.log('[DEBUG] FrameProcessor asString:', (frameProcessor.frameProcessor as any).asString);
+  }, [frameProcessor]);
+
+  // ... [Other effects omitted for brevity, keeping original logic]
 
   useEffect(() => {
     if (livenessState !== LivenessState.LIVENESS_PASS) return;
@@ -108,126 +117,68 @@ export default function FaceAuthScreen() {
 
     const embedding = getEmbedding();
     if (embedding) {
-      // If a match was found in the LSHIndex, log the verified identity
       if (matchedId && matchedId.length > 0 && matchScore > 0.7) {
-        console.log(
-          `[DRISHTI] Identity verified: ${matchedId} (score: ${matchScore.toFixed(3)})`
-        );
+        console.log(`[DRISHTI] Identity verified: ${matchedId} (score: ${matchScore.toFixed(3)})`);
       } else {
         console.log('[DRISHTI] Liveness passed — embedding ready for registration');
       }
     }
   }, [livenessState, embeddingReady, matchedId, matchScore, getEmbedding]);
 
-  // ── Handle Liveness Failure: Auto-reset after fail states ─────────────
-
   useEffect(() => {
-    if (
-      livenessState !== LivenessState.LIVENESS_FAIL &&
-      livenessState !== LivenessState.TEMPORAL_VARIANCE_FAIL
-    ) {
-      return;
-    }
-
-    // The C++ FSM auto-resets after FAIL_HOLD_MS (2 seconds).
-    // We reset our TS-side state slightly after to stay in sync.
-    const timer = setTimeout(() => {
-      resetEngine();
-    }, 2500);
-
+    if (livenessState !== LivenessState.LIVENESS_FAIL && livenessState !== LivenessState.TEMPORAL_VARIANCE_FAIL) return;
+    const timer = setTimeout(() => resetEngine(), 2500);
     return () => clearTimeout(timer);
   }, [livenessState, resetEngine]);
 
-  // ── Challenge Prompt Resolution ───────────────────────────────────────
-
-  const getChallengePrompt = useCallback(
-    (challenge: ChallengeType): string => {
-      switch (challenge) {
-        case ChallengeType.BLINK:
-          return '👁️  Blink slowly now';
-        case ChallengeType.SMILE:
-          return '😊  Please smile slightly';
-        case ChallengeType.TURN_LEFT:
-          return '← Turn your head left';
-        case ChallengeType.TURN_RIGHT:
-          return 'Turn your head right →';
-        default:
-          return '';
-      }
-    },
-    []
-  );
-
-  // ── Liveness State → UI Prompt ────────────────────────────────────────
-
-  const getLivenessPrompt = useCallback(
-    (state: LivenessState, challenge: ChallengeType): string => {
-      switch (state) {
-        case LivenessState.IDLE:
-          return 'Align your face inside the circle';
-        case LivenessState.DETECTED:
-          return 'Face detected — hold still';
-        case LivenessState.VARIANCE_CHECK:
-          return 'Analyzing liveness…';
-        case LivenessState.CHALLENGE_ACTIVE:
-          return getChallengePrompt(challenge);
-        case LivenessState.LIVENESS_PASS:
-          return '✅  Verification Successful!';
-        case LivenessState.LIVENESS_FAIL:
-          return errorCode === 'ERR_TIMEOUT'
-            ? '❌  Timed out — please try again'
-            : '❌  Challenge failed — retrying';
-        case LivenessState.TEMPORAL_VARIANCE_FAIL:
-          return '❌  Liveness check failed';
-        default:
-          return 'Positioning camera…';
-      }
-    },
-    [getChallengePrompt, errorCode]
-  );
-
-  // ── Ring Color Based on FSM State ─────────────────────────────────────
-
-  const getRingStyle = useCallback((state: LivenessState) => {
-    switch (state) {
-      case LivenessState.IDLE:
-        return styles.ringIdle;
-      case LivenessState.DETECTED:
-      case LivenessState.VARIANCE_CHECK:
-        return styles.ringScanning;
-      case LivenessState.CHALLENGE_ACTIVE:
-        return styles.ringChallenge;
-      case LivenessState.LIVENESS_PASS:
-        return styles.ringSuccess;
-      case LivenessState.LIVENESS_FAIL:
-      case LivenessState.TEMPORAL_VARIANCE_FAIL:
-        return styles.ringFail;
-      default:
-        return styles.ringIdle;
+  const getChallengePrompt = useCallback((challenge: ChallengeType): string => {
+    switch (challenge) {
+      case ChallengeType.BLINK: return '👁️  Blink slowly now';
+      case ChallengeType.SMILE: return '😊  Please smile slightly';
+      case ChallengeType.TURN_LEFT: return '← Turn your head left';
+      case ChallengeType.TURN_RIGHT: return 'Turn your head right →';
+      default: return '';
     }
   }, []);
 
-  // ── Permission Denied State ───────────────────────────────────────────
+  const getLivenessPrompt = useCallback((state: LivenessState, challenge: ChallengeType): string => {
+    switch (state) {
+      case LivenessState.IDLE: return 'Align your face inside the circle';
+      case LivenessState.DETECTED: return 'Face detected — hold still';
+      case LivenessState.VARIANCE_CHECK: return 'Analyzing liveness…';
+      case LivenessState.CHALLENGE_ACTIVE: return getChallengePrompt(challenge);
+      case LivenessState.LIVENESS_PASS: return '✅  Verification Successful!';
+      case LivenessState.LIVENESS_FAIL: return errorCode === 'ERR_TIMEOUT' ? '❌  Timed out — please try again' : '❌  Challenge failed — retrying';
+      case LivenessState.TEMPORAL_VARIANCE_FAIL: return '❌  Liveness check failed';
+      default: return 'Positioning camera…';
+    }
+  }, [getChallengePrompt, errorCode]);
+
+  const getRingStyle = useCallback((state: LivenessState) => {
+    switch (state) {
+      case LivenessState.IDLE: return styles.ringIdle;
+      case LivenessState.DETECTED:
+      case LivenessState.VARIANCE_CHECK: return styles.ringScanning;
+      case LivenessState.CHALLENGE_ACTIVE: return styles.ringChallenge;
+      case LivenessState.LIVENESS_PASS: return styles.ringSuccess;
+      case LivenessState.LIVENESS_FAIL:
+      case LivenessState.TEMPORAL_VARIANCE_FAIL: return styles.ringFail;
+      default: return styles.ringIdle;
+    }
+  }, []);
 
   if (!hasPermission) {
     return (
       <View style={styles.centered}>
         <Text style={styles.iconText}>🔒</Text>
         <Text style={styles.errorTitle}>Camera Access Required</Text>
-        <Text style={styles.errorSubtext}>
-          DRISHTI needs camera access for secure biometric authentication.
-        </Text>
-        <Pressable
-          style={styles.retryButton}
-          onPress={checkPermissionsDirectly}
-        >
+        <Text style={styles.errorSubtext}>DRISHTI needs camera access for secure biometric authentication.</Text>
+        <Pressable style={styles.retryButton} onPress={checkPermissionsDirectly}>
           <Text style={styles.retryButtonText}>Check Again</Text>
         </Pressable>
       </View>
     );
   }
-
-  // ── Loading: Waiting for Camera Device ────────────────────────────────
 
   if (!device) {
     return (
@@ -238,19 +189,20 @@ export default function FaceAuthScreen() {
     );
   }
 
-  // ── Main Scanning Interface ───────────────────────────────────────────
-
   return (
     <View style={styles.container}>
       {/* Active Hardware Camera Stream Layer */}
-      <Camera
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={true}
-        frameProcessor={frameProcessor}
-        pixelFormat="yuv"
-        resizeMode="cover"
-      />
+      <View style={{ flex: 1, backgroundColor: 'black', justifyContent: 'center' }}>
+        <Camera
+          style={{ flex: 1 }}
+          device={device}
+          format={format}
+          isActive={true}
+          resizeMode="contain"
+          frameProcessor={frameProcessor}
+          pixelFormat="yuv"
+        />
+      </View>
 
       {/* Semi-transparent vignette overlay */}
       <View style={styles.overlayContainer} pointerEvents="none">
@@ -277,7 +229,7 @@ export default function FaceAuthScreen() {
               {inferenceMs.toFixed(1)}ms
             </Text>
             <View style={styles.telemetryDot} />
-            <Text style={styles.telemetryText}>{nativeFps} FPS</Text>
+            <Text style={styles.telemetryText}>{Number(nativeFps).toFixed(1)} FPS</Text>
             <View style={styles.telemetryDot} />
             <Text style={styles.telemetryText}>
               {livenessState === LivenessState.LIVENESS_PASS && matchedId

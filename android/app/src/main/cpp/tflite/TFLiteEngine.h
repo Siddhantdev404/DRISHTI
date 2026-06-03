@@ -1,13 +1,18 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <android/log.h>
-#include <tensorflow/lite/c/c_api.h>
+// No tflite include needed for stub
+#include <opencv2/opencv.hpp>
 
-#define LOG_TAG "DrishtiTFLite"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+// No LOG_TAG redefine
 
 namespace drishti {
+
+struct BoundingBox {
+    float xMin, yMin, xMax, yMax;
+    float score;
+};
 
 class TFLiteEngine {
 public:
@@ -15,11 +20,11 @@ public:
     ~TFLiteEngine();
 
     bool loadModel(const std::string& modelPath);
+    
+    // Run BlazeFace detection and return the best bounding box
+    std::vector<BoundingBox> detectFaces(const cv::Mat& rgbImage);
 
-private:
-    TfLiteModel* model_ = nullptr;
-    TfLiteInterpreterOptions* options_ = nullptr;
-    TfLiteInterpreter* interpreter_ = nullptr;
+    // Stub
 };
 
 } // namespace drishti

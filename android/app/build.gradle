@@ -80,6 +80,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs += [
+                'src/main/cpp/deps/tflite/jni',
+                'src/main/cpp/deps/OpenCV-android-sdk/sdk/native/libs'
+            ]
+        }
+    }
 }
 
 dependencies {

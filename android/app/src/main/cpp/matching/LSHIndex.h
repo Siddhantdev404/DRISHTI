@@ -6,9 +6,11 @@
 #include <shared_mutex>
 #include <atomic>
 #include <string>
-#include <cstring>
+#include <random>
+#include <cmath>
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 class LSHIndex {
 public:
@@ -18,7 +20,7 @@ public:
   static constexpr int BUCKET_CAP = 30;  // Gap 1B fix: overflow protection
   // Fixed seed ensures identical hyperplanes across app restarts —
   // no need to persist hyperplane vectors to disk.
-  static constexpr uint32_t HYPERPLANE_SEED = 0xDR15481; // "DRISHTI" seed
+  static constexpr uint32_t HYPERPLANE_SEED = 0xD15481; // "DRISHTI" seed
 
   struct Candidate {
     std::string personnelId;

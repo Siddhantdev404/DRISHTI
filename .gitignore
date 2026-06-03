@@ -1,1 +1,37 @@
-node_modules
+# Node / Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.env
+.env.local
+
+# Android & Gradle Build Files
+android/.gradle/
+android/.idea/
+android/build/
+android/app/build/
+android/.cxx/
+android/app/.cxx/
+*.apk
+*.aab
+*.keystore
+
+# C++ & Native Build Artifacts
+.cxx/
+CMakeCache.txt
+CMakeFiles/
+*.so
+*.o
+*.obj
+
+# iOS Build Files (If you build for iPhone later)
+ios/Pods/
+ios/build/
+ios/Index/
+*.xcworkspace/xcuserdata/
+
+# OS & IDE Files
+.DS_Store
+.vscode/
+.idea/

@@ -1,9 +1,0 @@
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/Project.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/edit_cache.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/CMakeFiles/rebuild_cache.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNQuickSQLite_autolinked_build/CMakeFiles/react_codegen_RNQuickSQLite.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNQuickSQLite_autolinked_build/CMakeFiles/edit_cache.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNQuickSQLite_autolinked_build/CMakeFiles/rebuild_cache.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNWorkletsSpec_autolinked_build/CMakeFiles/react_codegen_RNWorkletsSpec.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNWorkletsSpec_autolinked_build/CMakeFiles/edit_cache.dir
-D:/DRISHTI/android/app/.cxx/Debug/1v6m4433/arm64-v8a/RNWorkletsSpec_autolinked_build/CMakeFiles/rebuild_cache.dir

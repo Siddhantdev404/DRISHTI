@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StatusBar, SafeAreaView, StyleSheet, View, Text, ActivityIndicator, AppRegistry } from 'react-native';
+import { StatusBar, SafeAreaView, StyleSheet, View, Text, ActivityIndicator, AppRegistry, NativeModules } from 'react-native';
 
 // Force safety fallbacks on the Javascript global execution context before any native imports load
 if (global != null) {
@@ -34,6 +34,12 @@ export default function App() {
 
     function boot() {
       try {
+        // ── Step 0: Synchronously install JSI bindings on the JS Thread ──
+        const installed = NativeModules.FaceAuthModule.install();
+        if (!installed) {
+          throw new Error("Failed to install FaceAuthModule JSI bindings.");
+        }
+
         // ── Step 1: Initialize the local SQLite vector database schema ───
         DatabaseService.initDatabase();
 

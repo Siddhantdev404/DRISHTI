@@ -1,1 +1,0 @@
-D:\DRISHTI\android\app\src\main\cpp\CMakeLists.txt

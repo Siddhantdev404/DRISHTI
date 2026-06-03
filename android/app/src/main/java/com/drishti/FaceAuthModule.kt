@@ -43,7 +43,7 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
          * @param callInvokerHolder Java-side CallInvokerHolder for thread-safe JS invocations
          */
         @JvmStatic
-        external fun nativeInstall(jsiRuntimePtr: Long, callInvokerHolder: Any)
+        external fun nativeInstall(jsiRuntimePtr: Long, callInvokerHolder: Any, modelPath: String)
 
         /**
          * JNI entry point → Java_com_drishti_FaceAuthModule_nativeCleanup
@@ -53,23 +53,17 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
          */
         @JvmStatic
         external fun nativeCleanup()
+
+        /**
+         * JNI entry point → Java_com_drishti_FaceAuthModule_nativeProcessFrame
+         */
+        @JvmStatic
+        external fun nativeProcessFrame(buffer: java.nio.ByteBuffer, width: Int, height: Int, stride: Int)
     }
 
     override fun getName(): String = NAME
 
-    /**
-     * Called by React Native after the CatalystInstance is fully initialized.
-     * This is the safe place to install JSI bindings — the bridge is ready.
-     */
-    override fun initialize() {
-        super.initialize()
-        try {
-            val result = install()
-            android.util.Log.i(NAME, "JSI bindings install result: $result")
-        } catch (t: Throwable) {
-            android.util.Log.e(NAME, "initialize() failed to install JSI bindings", t)
-        }
-    }
+
 
     /**
      * Synchronous blocking method callable from JS to trigger JSI binding installation.
@@ -98,8 +92,20 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
             // Extract the CallInvokerHolder so C++ can schedule callbacks onto the JS thread
             val callInvokerHolder = catalystInstance.jsCallInvokerHolder
 
-            // Forward both handles to the C++ JNI layer, which calls installFaceAuth()
-            nativeInstall(jsContext, callInvokerHolder)
+            // Copy OpenCV Haar Cascade from assets to cache dir for C++ access
+            val modelFilename = "haarcascade.xml"
+            val modelFile = java.io.File(context.cacheDir, modelFilename)
+            if (!modelFile.exists()) {
+                context.assets.open(modelFilename).use { input ->
+                    java.io.FileOutputStream(modelFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+            val modelPath = modelFile.absolutePath
+
+            // Forward both handles and model path to the C++ JNI layer
+            nativeInstall(jsContext, callInvokerHolder, modelPath)
 
             android.util.Log.i(NAME, "JSI bindings installed successfully")
             true

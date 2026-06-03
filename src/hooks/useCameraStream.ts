@@ -27,10 +27,13 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { Dimensions } from 'react-native';
 import {
   Camera,
   useCameraDevices,
+  useCameraFormat,
   type CameraDevice,
+  type CameraFormat,
 } from 'react-native-vision-camera';
 
 // ─── Hook Return Type ────────────────────────────────────────────────────────
@@ -49,6 +52,7 @@ export interface CameraStreamState {
    * biometric face authentication capture.
    */
   device: CameraDevice | undefined;
+  format: CameraFormat | undefined;
 
   /**
    * Imperatively re-checks the camera permission status without triggering
@@ -69,11 +73,14 @@ export function useCameraStream(): CameraStreamState {
   // hardware camera profiles from the Android CameraManager / iOS AVCaptureDevice.
   const devices = useCameraDevices();
 
-  // DRISHTI exclusively uses the front-facing camera for secure biometric
-  // face authentication. Filter the device list to isolate it.
   const frontCamera = devices.find(
     (d: CameraDevice) => d.position === 'front'
   );
+
+  const format = useCameraFormat(frontCamera, [
+    { videoAspectRatio: 4 / 3 },
+    { fps: 30 }
+  ]);
 
   // ── Permission Request on Mount ────────────────────────────────────────
 
@@ -144,6 +151,7 @@ export function useCameraStream(): CameraStreamState {
   return {
     hasPermission,
     device: frontCamera,
+    format,
     checkPermissionsDirectly,
   };
 }

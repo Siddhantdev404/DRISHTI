@@ -14,6 +14,17 @@
 
 // ─── Type Definitions ────────────────────────────────────────────────────────
 
+import { NativeModules } from 'react-native';
+
+const { FaceAuthModule } = NativeModules;
+
+if (FaceAuthModule && typeof FaceAuthModule.install === 'function') {
+  const installed = FaceAuthModule.install();
+  console.log('[DRISHTI] FaceAuthModule.install() returned:', installed);
+} else {
+  console.error('[DRISHTI] FaceAuthModule not found in NativeModules! Cannot install JSI bindings.');
+}
+
 export enum LivenessState {
   IDLE = 0,
   DETECTED = 1,

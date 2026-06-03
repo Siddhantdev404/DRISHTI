@@ -96,40 +96,27 @@ function parseOrientationToRotation(orientation: string): number {
 export function processFaceAuthFrame(frame: Frame): boolean {
   'worklet';
 
-  // 1. Extract raw hardware frame geometry
-  const width = frame.width;
-  const height = frame.height;
+    // 1. Extract raw hardware frame geometry
+    const width = frame.width;
+    const height = frame.height;
 
-  // 2. Translate the orientation string into a numeric rotation angle
-  //    for correct face landmark coordinate matrix transformations in C++
-  const orientation = frame.orientation;
-  const _rotation = parseOrientationToRotation(orientation);
+    const orientation = frame.orientation;
+    const _rotation = parseOrientationToRotation(orientation);
 
-  // 3. Extract the raw Y-plane luminance pixel data directly from hardware
-  //    memory via Vision Camera's JSI zero-copy ArrayBuffer allocation.
-  //    This does NOT copy the pixel data — it returns a JSI ArrayBuffer
-  //    backed by the same native memory pointer.
-  const frameBuffer = frame.toArrayBuffer();
+    const frameBuffer = frame.toArrayBuffer();
 
-  if (!frameBuffer) {
-    return false;
-  }
+    if (!frameBuffer) {
+      console.log("[DRISHTI] Frame Buffer is null!");
+      return false;
+    }
 
-  // 4. Compute the row stride from the buffer dimensions.
-  //    Camera HAL may add padding bytes at the end of each row for memory
-  //    alignment. stride = total_bytes / height accounts for this.
-  //    The C++ FrameMailbox::post() uses stride (not width) for correct
-  //    row-by-row pixel access in AdaptiveClahe::process().
-  const stride = Math.floor(frameBuffer.byteLength / height);
+    const stride = Math.floor(frameBuffer.byteLength / height);
 
-  // 5. Post the raw Y-plane ArrayBuffer synchronously into the C++
-  //    FrameMailbox. The background inference thread will pick this up
-  //    via FrameMailbox::fetch() and run the full pipeline:
-  //      AdaptiveClahe → LivenessFSM → embedding extraction → LSHIndex match
-  //
-  //    processVisionFrame is a synchronous JSI global function installed by
-  //    face_auth_plugin.cpp → installFaceAuth(). It takes:
-  //      (frameBuffer: ArrayBuffer, width: int, height: int, stride: int)
-  //    and returns true if the mailbox accepted the frame.
-  return (global as any).processVisionFrame(frameBuffer, width, height, stride);
+    if (typeof global.processVisionFrame !== 'function') {
+      console.error("[DRISHTI] FATAL: global.processVisionFrame is undefined inside the worklet runtime!");
+      return false;
+    }
+
+    // @ts-ignore
+    return global.processVisionFrame(frameBuffer, width, height, stride);
 }

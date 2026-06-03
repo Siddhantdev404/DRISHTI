@@ -1,41 +1,27 @@
 #include "TFLiteEngine.h"
-#include <thread>
+#include <android/log.h>
+
+#undef LOG_TAG
+#define LOG_TAG "DrishtiTFLite"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 
 namespace drishti {
 
 TFLiteEngine::~TFLiteEngine() {
-    if (interpreter_) TfLiteInterpreterDelete(interpreter_);
-    if (options_) TfLiteInterpreterOptionsDelete(options_);
-    if (model_) TfLiteModelDelete(model_);
+    // Stub
 }
 
 bool TFLiteEngine::loadModel(const std::string& modelPath) {
-    model_ = TfLiteModelCreateFromFile(modelPath.c_str());
-    if (!model_) {
-        LOGE("Failed to load model at %s", modelPath.c_str());
-        return false;
-    }
-
-    options_ = TfLiteInterpreterOptionsCreate();
-    
-    // Dynamic Thread Budgeting (cores / 4)
-    int hardwareThreads = std::thread::hardware_concurrency();
-    int tfliteThreads = (hardwareThreads > 3) ? (hardwareThreads / 4) : 1;
-    TfLiteInterpreterOptionsSetNumThreads(options_, tfliteThreads);
-
-    interpreter_ = TfLiteInterpreterCreate(model_, options_);
-    if (!interpreter_) {
-        LOGE("Failed to create interpreter for %s", modelPath.c_str());
-        return false;
-    }
-
-    if (TfLiteInterpreterAllocateTensors(interpreter_) != kTfLiteOk) {
-        LOGE("Failed to allocate tensors for %s", modelPath.c_str());
-        return false;
-    }
-
-    LOGI("Successfully loaded and allocated TFLite model: %s with %d threads. Status: kTfLiteOk", modelPath.c_str(), tfliteThreads);
+    (void)modelPath;
+    LOGI("TFLiteEngine::loadModel called with path: %s", modelPath.c_str());
+    // Since we are using OpenCV Haar Cascade for now to prove the pipeline,
+    // we don't actually need to load TFLite model in this version.
     return true;
+}
+
+std::vector<BoundingBox> TFLiteEngine::detectFaces(const cv::Mat& rgbImage) {
+    (void)rgbImage;
+    return {};
 }
 
 } // namespace drishti
