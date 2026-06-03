@@ -1,0 +1,22 @@
+name: React Native TS and Test Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  js-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          
+      - run: npm ci
+      
+      - name: TS Strict Check
+        run: npx tsc --noEmit --strict
+        
+      - name: Jest Coverage Gate
+        run: npx jest --coverage --coverageThreshold='{"global":{"lines":80}}'

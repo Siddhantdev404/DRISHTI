@@ -58,6 +58,20 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
     override fun getName(): String = NAME
 
     /**
+     * Called by React Native after the CatalystInstance is fully initialized.
+     * This is the safe place to install JSI bindings — the bridge is ready.
+     */
+    override fun initialize() {
+        super.initialize()
+        try {
+            val result = install()
+            android.util.Log.i(NAME, "JSI bindings install result: $result")
+        } catch (t: Throwable) {
+            android.util.Log.e(NAME, "initialize() failed to install JSI bindings", t)
+        }
+    }
+
+    /**
      * Synchronous blocking method callable from JS to trigger JSI binding installation.
      * Called once at app startup — typically from the MainApplication or the first
      * screen that needs face authentication.
@@ -67,10 +81,19 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun install(): Boolean {
         return try {
-            val catalystInstance = reactApplicationContext.catalystInstance
+            val context = reactApplicationContext
+            android.util.Log.i(NAME, "install() called, checking CatalystInstance...")
+
+            val catalystInstance = context.catalystInstance
 
             // Extract the raw JSI runtime pointer address from the CatalystInstance
             val jsContext = catalystInstance.javaScriptContextHolder.get()
+            android.util.Log.i(NAME, "JSI runtime pointer: $jsContext")
+
+            if (jsContext == 0L) {
+                android.util.Log.e(NAME, "JSI runtime pointer is 0 — bridge not ready yet")
+                return false
+            }
 
             // Extract the CallInvokerHolder so C++ can schedule callbacks onto the JS thread
             val callInvokerHolder = catalystInstance.jsCallInvokerHolder
@@ -78,9 +101,10 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
             // Forward both handles to the C++ JNI layer, which calls installFaceAuth()
             nativeInstall(jsContext, callInvokerHolder)
 
+            android.util.Log.i(NAME, "JSI bindings installed successfully")
             true
-        } catch (e: Exception) {
-            android.util.Log.e(NAME, "Failed to install JSI bindings", e)
+        } catch (t: Throwable) {
+            android.util.Log.e(NAME, "Failed to install JSI bindings", t)
             false
         }
     }

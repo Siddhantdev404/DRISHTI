@@ -1,0 +1,537 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "D:/DRISHTI/android/app/build/intermediates/cxx/RelWithDebInfo/651f6p3d/obj/arm64-v8a/libProject.so"
+		}
+	],
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"target_link_options",
+			"target_link_libraries",
+			"target_compile_options",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"D:/DRISHTI/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 7,
+				"parent" : 0
+			},
+			{
+				"file" : 0,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 42,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 39,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 94,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 33,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 49,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 23,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 44,
+				"parent" : 2
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 13,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O2 -g -DNDEBUG -fPIC"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Werror"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Wno-error=cpp"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-fexceptions"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-frtti"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-std=c++20"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-DLOG_TAG=\\\"ReactNative\\\""
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "-march=armv8-a+simd"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "-DDRISHTI_USE_NEON"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_NO_CONFIG=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_HAVE_CLOCK_GETTIME=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_USE_LIBCPP=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_CFG_NO_COROUTINES=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_MOBILE=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_HAVE_RECVMMSG=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_HAVE_PTHREAD=1"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DFOLLY_HAVE_XSI_STRERROR_R=1"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"define" : "Project_EXPORTS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "D:/DRISHTI/android/app/src/main/cpp"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "D:/DRISHTI/android/app/build/generated/rncli/src/main/jni"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "D:/DRISHTI/android/app/src/main/cpp/engine"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "D:/DRISHTI/android/app/src/main/cpp/preprocessing"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "D:/DRISHTI/android/app/src/main/cpp/liveness"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "D:/DRISHTI/android/app/src/main/cpp/matching"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "D:/DRISHTI/shared"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/fabricjni/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/c86f83a5ea753544141900fd2d207265/transformed/jetified-fbjni-0.6.0/prefab/modules/fbjni/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/folly_runtime/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/glog/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/jsi/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_codegen_rncore/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_debug/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_utils/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_nativemodule_core/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_newarchdefaults/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_cxxreactpackage/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_componentregistry/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_core/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_debug/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_graphics/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_imagemanager/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_mapbuffer/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/react_render_textlayoutmanager/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/rrc_image/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/rrc_view/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/rrc_text/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/rrc_textinput/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/rrc_legacyviewmanagerinterop/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/runtimeexecutor/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/turbomodulejsijni/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Users/Siddhant/.gradle/caches/transforms-3/f8d33cf8eff42959d605c7a561836b19/transformed/jetified-react-android-0.74.2-release/prefab/modules/yoga/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			],
+			"sysroot" : 
+			{
+				"path" : "D:/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
+			}
+		}
+	],
+	"id" : "Project::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments  -Wl,--gc-sections",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-Wl,-z,max-page-size=16384",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\fabricjni\\libs\\android.arm64-v8a\\libfabricjni.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\folly_runtime\\libs\\android.arm64-v8a\\libfolly_runtime.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\glog\\libs\\android.arm64-v8a\\libglog.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\jsi\\libs\\android.arm64-v8a\\libjsi.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_codegen_rncore\\libs\\android.arm64-v8a\\libreact_codegen_rncore.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_debug\\libs\\android.arm64-v8a\\libreact_debug.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_utils\\libs\\android.arm64-v8a\\libreact_utils.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_nativemodule_core\\libs\\android.arm64-v8a\\libreact_nativemodule_core.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_newarchdefaults\\libs\\android.arm64-v8a\\libreact_newarchdefaults.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_cxxreactpackage\\libs\\android.arm64-v8a\\libreact_cxxreactpackage.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_componentregistry\\libs\\android.arm64-v8a\\libreact_render_componentregistry.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_core\\libs\\android.arm64-v8a\\libreact_render_core.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_debug\\libs\\android.arm64-v8a\\libreact_render_debug.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_graphics\\libs\\android.arm64-v8a\\libreact_render_graphics.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_imagemanager\\libs\\android.arm64-v8a\\libreact_render_imagemanager.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_mapbuffer\\libs\\android.arm64-v8a\\libreact_render_mapbuffer.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\react_render_textlayoutmanager\\libs\\android.arm64-v8a\\libreact_render_textlayoutmanager.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\rrc_image\\libs\\android.arm64-v8a\\librrc_image.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\rrc_view\\libs\\android.arm64-v8a\\librrc_view.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\rrc_text\\libs\\android.arm64-v8a\\librrc_text.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\rrc_textinput\\libs\\android.arm64-v8a\\librrc_textinput.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\rrc_legacyviewmanagerinterop\\libs\\android.arm64-v8a\\librrc_legacyviewmanagerinterop.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\runtimeexecutor\\libs\\android.arm64-v8a\\libruntimeexecutor.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\turbomodulejsijni\\libs\\android.arm64-v8a\\libturbomodulejsijni.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab\\modules\\yoga\\libs\\android.arm64-v8a\\libyoga.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-landroid",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-llog",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\c86f83a5ea753544141900fd2d207265\\transformed\\jetified-fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.arm64-v8a\\libfbjni.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-latomic -lm",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX",
+		"sysroot" : 
+		{
+			"path" : "D:/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
+		}
+	},
+	"name" : "Project",
+	"nameOnDisk" : "libProject.so",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "face_auth_plugin.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "SHARED_LIBRARY"
+}

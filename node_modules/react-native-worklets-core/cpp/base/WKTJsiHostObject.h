@@ -2,8 +2,6 @@
 
 #include <jsi/jsi.h>
 
-#include "WKTRuntimeAwareCache.h"
-
 #include <functional>
 #include <map>
 #include <memory>
@@ -197,6 +195,6 @@ protected:
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &runtime) override;
 
 private:
-  RuntimeAwareCache<std::map<std::string, jsi::Function>> _hostFunctionCache;
+  std::map<void *, std::map<std::string, jsi::Function>> _hostFunctionCache;
 };
 } // namespace RNWorklet

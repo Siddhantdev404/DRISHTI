@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "prefabPath": "C:\\Users\\Siddhant\\.gradle\\caches\\modules-2\\files-2.1\\com.google.prefab\\cli\\2.0.0\\f2702b5ca13df54e3ca92f29d6b403fb6285d8df\\cli-2.0.0-all.jar",
+  "packages": [
+    "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\f8d33cf8eff42959d605c7a561836b19\\transformed\\jetified-react-android-0.74.2-release\\prefab",
+    "D:\\DRISHTI\\node_modules\\react-native-vision-camera\\android\\build\\intermediates\\prefab_package\\release\\prefab",
+    "D:\\DRISHTI\\node_modules\\react-native-worklets-core\\android\\build\\intermediates\\prefab_package\\release\\prefab",
+    "C:\\Users\\Siddhant\\.gradle\\caches\\transforms-3\\c86f83a5ea753544141900fd2d207265\\transformed\\jetified-fbjni-0.6.0\\prefab"
+  ]
+}

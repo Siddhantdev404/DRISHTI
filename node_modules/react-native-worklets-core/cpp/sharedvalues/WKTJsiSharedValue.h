@@ -20,10 +20,10 @@ public:
    Constructs a shared value - which is a wrapped value that can be accessed in
    a thread safe across two javascript runtimes.
    */
-  explicit JsiSharedValue(const jsi::Value &value)
-      : _valueWrapper(JsiWrapper::wrap(
-            *JsiWorkletContext::getDefaultInstance()->getJsRuntime(), value,
-            nullptr, true)) {}
+  JsiSharedValue(const jsi::Value &value,
+                 std::shared_ptr<JsiWorkletContext> context)
+      : _valueWrapper(JsiWrapper::wrap(*context->getJsRuntime(), value)),
+        _context(context) {}
 
   /**
     Destructor
@@ -35,13 +35,15 @@ public:
                                        _valueWrapper->toString(runtime));
   }
 
-  JSI_PROPERTY_GET(value) { return _valueWrapper->unwrap(runtime); }
+  JSI_PROPERTY_GET(value) {
+    return _valueWrapper->unwrapAsProxyOrValue(runtime);
+  }
 
   JSI_PROPERTY_SET(value) {
     if (_valueWrapper->canUpdateValue(runtime, value)) {
       _valueWrapper->updateValue(runtime, value);
     } else {
-      _valueWrapper = JsiWrapper::wrap(runtime, value, nullptr, true);
+      _valueWrapper = JsiWrapper::wrap(runtime, value);
     }
   }
 
@@ -72,16 +74,14 @@ public:
     };
 
     // Do not Wrap this Value - replace with undefined
-    auto thisValuePtr =
-        JsiWrapper::wrap(runtime, jsi::Value::undefined(), nullptr, true);
+    auto thisValuePtr = JsiWrapper::wrap(runtime, jsi::Value::undefined());
 
     auto dispatcher = JsiDispatcher::createDispatcher(
         runtime, thisValuePtr, functionPtr, nullptr,
         [&runtime, this](const char *err) {
-          JsiWorkletContext::getCurrent(runtime)->invokeOnJsThread(
-              [err](jsi::Runtime &runtime) {
-                throw jsi::JSError(runtime, err);
-              });
+          _context->invokeOnJsThread([err](jsi::Runtime &runtime) {
+            throw jsi::JSError(runtime, err);
+          });
         });
 
     // Set up the callback to run on the correct runtime thread.
@@ -124,5 +124,6 @@ public:
 
 private:
   std::shared_ptr<JsiWrapper> _valueWrapper;
+  std::shared_ptr<JsiWorkletContext> _context;
 };
 } // namespace RNWorklet

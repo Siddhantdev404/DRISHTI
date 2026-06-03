@@ -249,6 +249,7 @@ export default function FaceAuthScreen() {
         isActive={true}
         frameProcessor={frameProcessor}
         pixelFormat="yuv"
+        resizeMode="cover"
       />
 
       {/* Semi-transparent vignette overlay */}

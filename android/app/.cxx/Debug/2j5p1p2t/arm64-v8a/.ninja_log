@@ -1,0 +1,9 @@
+# ninja log v5
+0	19	0	D:/DRISHTI/android/app/.cxx/Debug/2j5p1p2t/arm64-v8a/CMakeFiles/cmake.verify_globs	91a8e504efaa3e6d
+3	852	8021708649598443	CMakeFiles/Project.dir/face_auth_plugin.cpp.o	9a3fbc9859905c9f
+10	909	8021708650174612	CMakeFiles/Project.dir/engine/FaceAuthHostObject.cpp.o	9cc141fc2bee7f66
+3	196	8021711498584169	D:/DRISHTI/android/app/build/intermediates/cxx/Debug/2j5p1p2t/obj/arm64-v8a/libProject.so	28ebf97b690565f8
+0	6	0	clean	8b6eb38772ef9922
+19	428	8021835978516695	build.ninja	681cec06cf06c096
+0	14	0	D:/DRISHTI/android/app/.cxx/Debug/2j5p1p2t/arm64-v8a/CMakeFiles/cmake.verify_globs	91a8e504efaa3e6d
+0	6	0	clean	8b6eb38772ef9922

@@ -16,7 +16,8 @@ class FaceAuthPackage : ReactPackage {
     override fun createNativeModules(
         reactContext: ReactApplicationContext
     ): List<NativeModule> {
-        return listOf(FaceAuthModule(reactContext))
+        val module = FaceAuthModule(reactContext)
+        return listOf(module)
     }
 
     override fun createViewManagers(

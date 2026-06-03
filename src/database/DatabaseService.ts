@@ -8,6 +8,10 @@ export const DatabaseService = {
    * Initializes the local database tables
    */
   initDatabase(): void {
+    db.execute('PRAGMA journal_mode=WAL;');
+    db.execute('PRAGMA wal_autocheckpoint=0;');
+    console.log('DRISHTI Database: PRAGMA journal_mode=WAL and wal_autocheckpoint=0 set.');
+
     // Create the users table to store IDs, names, and face template blobs
     const result = db.execute(
       `CREATE TABLE IF NOT EXISTS users (

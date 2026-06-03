@@ -1,50 +1,51 @@
-export const LEDGER_GENESIS_HASH: string =
-  "0000000000000000000000000000000000000000000000000000000000000000";
+// FaceAuthResult.ts — mirrors FaceAuthResult.h exactly.
+// FROZEN contract. Edit only via joint bridge PR.
+
+export const LEDGER_GENESIS_HASH =
+  '0000000000000000000000000000000000000000000000000000000000000000';
 
 export type LivenessState =
-  | "IDLE"
-  | "DETECTED"
-  | "VARIANCE_CHECK"
-  | "CHALLENGE_ACTIVE"
-  | "LIVENESS_PASS"
-  | "LIVENESS_FAIL"
-  | "TEMPORAL_VARIANCE_FAIL";
+  | 'IDLE'
+  | 'DETECTED'
+  | 'VARIANCE_CHECK'
+  | 'CHALLENGE_ACTIVE'
+  | 'LIVENESS_PASS'
+  | 'LIVENESS_FAIL'
+  | 'TEMPORAL_VARIANCE_FAIL';
 
-export type ChallengeType =
-  | "NONE"
-  | "BLINK"
-  | "SMILE"
-  | "TURN_LEFT"
-  | "TURN_RIGHT";
+export type ChallengeType = 'NONE' | 'BLINK' | 'SMILE' | 'TURN_LEFT' | 'TURN_RIGHT';
 
 export type FaceAuthErrorCode =
-  | ""
-  | "ERR_NO_FACE"
-  | "ERR_MULTI_FACE"
-  | "ERR_LOW_QUALITY"
-  | "ERR_LIVENESS_FAIL"
-  | "ERR_MATCH_FAIL"
-  | "ERR_TIMEOUT"
-  | "ERR_MODEL_LOAD"
-  | "ERR_INFERENCE"
-  | "ERR_CAMERA"
-  | "ERR_UNKNOWN";
+  | ''                     // no error
+  | 'CVLockFailed'
+  | 'PoolExhausted'
+  | 'ModelLoadFail'
+  | 'NNAPIUnsupported'
+  | 'EnrollQualityFail'
+  | 'LSHNotReady';
 
 export interface FaceAuthResult {
-  livenessState: LivenessState;
-  activeChallenge: ChallengeType;
-  matchScore: number;
-  matchedId: string;
-  embeddingBytes: Uint8Array;
-  embeddingReady: boolean;
-  inferenceMs: number;
-  ear: number;
-  mar: number;
-  yaw: number;
-  pitch: number;
-  tempVariance: number;
-  frameCount: number;
-  nativeFps: number;
-  nativeHeapKB: number;
+  // Primary output
+  livenessState:    LivenessState;
+  activeChallenge:  ChallengeType;
+  matchScore:       number;        // [0.0, 1.0]
+  matchedId:        string;        // UUID v4 or "" if no match
+
+  // Enrollment (only valid when livenessState === 'LIVENESS_PASS')
+  embeddingBytes:   Uint8Array;    // 512 bytes = 128 × float32
+  embeddingReady:   boolean;
+
+  // Debug / HUD
+  inferenceMs:   number;
+  ear:           number;
+  mar:           number;
+  yaw:           number;
+  pitch:         number;
+  tempVariance:  number;
+  frameCount:    number;
+  nativeFps:     number;
+  nativeHeapKB:  number;
+
+  // Error propagation — check this FIRST
   errorCode: FaceAuthErrorCode;
 }

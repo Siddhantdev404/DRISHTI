@@ -4,10 +4,11 @@ plugins {
     id("com.facebook.react")
 }
 
-react {
-    /* Keep any of your pre-existing custom paths inside here if they exist */
-    entryFile = file("../App.tsx")
-}
+project.ext.react = [
+    entryFile: "../App.tsx",
+    bundleInRelease: true,
+    bundleInDebug: true,
+]
 
 android {
     namespace = "com.drishti"
@@ -28,14 +29,28 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags += ""
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
+    }
+
+    buildFeatures {
+        prefab true
     }
 
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
         }
+    }
+
+    bundle {
+        language { enableSplit = false }
+        abi { enableSplit = true } // Use APK splits for production
+    }
+
+    packagingOptions {
+        pickFirst 'lib/**/*.so'
     }
 
     buildTypes {
@@ -53,6 +68,7 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging = false
+            pickFirst 'lib/*/libc++_shared.so'
         }
     }
 
@@ -69,6 +85,9 @@ android {
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    
+    implementation project(':react-native-worklets-core')
+    implementation project(':react-native-vision-camera')
 }
 
 

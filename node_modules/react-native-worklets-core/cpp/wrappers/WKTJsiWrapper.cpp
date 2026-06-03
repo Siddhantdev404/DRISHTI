@@ -8,8 +8,7 @@ namespace RNWorklet {
 namespace jsi = facebook::jsi;
 
 jsi::Value JsiWrapper::getValue(jsi::Runtime &runtime) {
-  std::unique_lock lock(_readWriteMutex);
-
+  std::unique_lock<std::mutex> lock(*_readWriteMutex);
   switch (_type) {
   case JsiWrapperType::Undefined:
     return jsi::Value::undefined();
@@ -29,25 +28,21 @@ jsi::Value JsiWrapper::getValue(jsi::Runtime &runtime) {
 
 std::shared_ptr<JsiWrapper> JsiWrapper::wrap(jsi::Runtime &runtime,
                                              const jsi::Value &value,
-                                             JsiWrapper *parent,
-                                             bool useProxiesForUnwrapping) {
+                                             JsiWrapper *parent) {
   std::shared_ptr<JsiWrapper> retVal = nullptr;
 
   if (value.isUndefined() || value.isNull() || value.isBool() ||
       value.isNumber() || value.isString()) {
-    retVal = std::make_shared<JsiWrapper>(parent, useProxiesForUnwrapping);
+    retVal = std::make_shared<JsiWrapper>(runtime, value, parent);
   } else if (value.isObject()) {
     auto obj = value.asObject(runtime);
     if (obj.isArray(runtime)) {
-      retVal =
-          std::make_shared<JsiArrayWrapper>(parent, useProxiesForUnwrapping);
+      retVal = std::make_shared<JsiArrayWrapper>(runtime, value, parent);
     } else if (!obj.isHostObject(runtime) &&
                JsiPromiseWrapper::isThenable(runtime, obj)) {
-      retVal =
-          std::make_shared<JsiPromiseWrapper>(parent, useProxiesForUnwrapping);
+      retVal = std::make_shared<JsiPromiseWrapper>(runtime, value, parent);
     } else {
-      retVal =
-          std::make_shared<JsiObjectWrapper>(parent, useProxiesForUnwrapping);
+      retVal = std::make_shared<JsiObjectWrapper>(runtime, value, parent);
     }
   }
 
@@ -80,8 +75,7 @@ void JsiWrapper::setValue(jsi::Runtime &runtime, const jsi::Value &value) {
 }
 
 void JsiWrapper::updateValue(jsi::Runtime &runtime, const jsi::Value &value) {
-  std::unique_lock lock(_readWriteMutex);
-
+  std::unique_lock<std::mutex> lock(*_readWriteMutex);
   setValue(runtime, value);
   // Notify changes
   notify();

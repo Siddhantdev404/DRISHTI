@@ -1,0 +1,4 @@
+#Wed Jun 03 15:40:17 IST 2026
+base.0=D\:\\DRISHTI\\android\\app\\build\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

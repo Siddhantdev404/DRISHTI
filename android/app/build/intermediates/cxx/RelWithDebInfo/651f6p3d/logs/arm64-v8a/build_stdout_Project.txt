@@ -1,0 +1,4 @@
+ninja: Entering directory `D:\DRISHTI\android\app\.cxx\RelWithDebInfo\651f6p3d\arm64-v8a'
+[0/2] Re-checking globbed directories...
+[1/2] Building CXX object CMakeFiles/Project.dir/face_auth_plugin.cpp.o
+[2/2] Linking CXX shared library D:\DRISHTI\android\app\build\intermediates\cxx\RelWithDebInfo\651f6p3d\obj\arm64-v8a\libProject.so
