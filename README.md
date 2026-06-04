@@ -222,7 +222,7 @@ A successful link will output `BUILD SUCCESSFUL` with `face_auth_engine` shared 
 
 ## 📄 License
 
-See [`LICENSES.md`](./LICENSES.md) for third-party attributions including TensorFlow Lite (Apache 2.0), SQLCipher (BSD), and Shopify Skia (BSD).
+See [`LICENSE`](./LICENSES) for third-party attributions including TensorFlow Lite (Apache 2.0), SQLCipher (BSD), and Shopify Skia (BSD).
 
 ---
 
