@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  StyleSheet, Text, View, Pressable, ScrollView, DeviceEventEmitter
+  StyleSheet, Text, View, Pressable, ScrollView, DeviceEventEmitter, Alert
 } from 'react-native';
 import { DatabaseService } from '../database/DatabaseService';
 
@@ -44,6 +44,25 @@ export default function HomeScreen({ onNavigate }: Props) {
   }, [loadData]);
 
   const isReady = dbReady;
+
+  const handleClearAll = useCallback(() => {
+    Alert.alert(
+      "Reset DRISHTI",
+      "This will delete all enrolled users, attendance history, and LSH profiles. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => {
+            DatabaseService.resetAllData();
+            loadData();
+            DeviceEventEmitter.emit('attendanceUpdated'); // notify other screens if they are mounted
+          }
+        }
+      ]
+    );
+  }, [loadData]);
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
@@ -130,6 +149,19 @@ export default function HomeScreen({ onNavigate }: Props) {
         <View style={styles.actionText}>
           <Text style={styles.actionLabel}>Attendance History</Text>
           <Text style={styles.actionSub}>View all verification records</Text>
+        </View>
+        <Text style={styles.actionChevron}>›</Text>
+      </Pressable>
+
+      <Text style={[styles.sectionTitle, { marginTop: 24, color: '#FF3366' }]}>ADMIN CONTROLS</Text>
+      
+      <Pressable style={styles.actionBtn} onPress={handleClearAll}>
+        <View style={[styles.actionIcon, { backgroundColor: 'rgba(255,51,102,0.08)' }]}>
+          <Text style={styles.actionEmoji}>🗑</Text>
+        </View>
+        <View style={styles.actionText}>
+          <Text style={[styles.actionLabel, { color: '#FF3366' }]}>Clear All Users</Text>
+          <Text style={styles.actionSub}>Delete all data and reset LSH index</Text>
         </View>
         <Text style={styles.actionChevron}>›</Text>
       </Pressable>

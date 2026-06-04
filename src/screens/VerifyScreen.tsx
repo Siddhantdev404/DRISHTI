@@ -100,7 +100,12 @@ export default function VerifyScreen({ onBack }: Props) {
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet';
     if (faceAuthPlugin == null) return;
-    faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    try {
+      if (!frame.isValid) return;
+      faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    } catch (e) {
+      // Ignore Image is already closed errors
+    }
   }, []);
 
   // ── Engine lifecycle ────────────────────────────────────────────────────────
@@ -135,10 +140,6 @@ export default function VerifyScreen({ onBack }: Props) {
 
   useEffect(() => {
     if (livenessState !== LivenessState.LIVENESS_PASS) return;
-    // ── Race guard: same as EnrollmentScreen ────────────────────────────────
-    // matchScore and matchedId are set in InferencePipeline.cpp at the same
-    // time as embeddingReady_ (lines 130–160). Without this guard, the first
-    // poll tick can see LIVENESS_PASS with matchScore=0 → false REJECTED.
     if (!embeddingReady) return;
     if (processedRef.current) return;
 
@@ -146,21 +147,18 @@ export default function VerifyScreen({ onBack }: Props) {
 
     const isMatch =
       matchScore >= MATCH_THRESHOLD &&
+      livenessState === LivenessState.LIVENESS_PASS &&
       typeof matchedId === 'string' &&
       matchedId.length > 0;
 
-    console.log('[DRISHTI_MATCH_DEBUG]');
-    console.log('candidate_id:', matchedId);
-    console.log('score:', matchScore);
-    console.log('threshold:', MATCH_THRESHOLD);
-
-    // ── [DRISHTI_MATCH] structured log ──────────────────────────────────────
-    console.log('[DRISHTI_MATCH]', JSON.stringify({
-      candidate_id:  matchedId || 'none',
-      match_score:   Number(matchScore).toFixed(4),
-      threshold:     MATCH_THRESHOLD,
-      result:        isMatch ? 'VERIFIED' : 'REJECTED',
-    }));
+    console.log(
+      JSON.stringify({
+        candidate_id: matchedId,
+        score: matchScore,
+        threshold: MATCH_THRESHOLD,
+        result: isMatch ? 'VERIFIED' : 'REJECTED'
+      })
+    );
 
     if (isMatch) {
       // Look up display name from DB (matchedId is the stored UUID)
@@ -204,7 +202,7 @@ export default function VerifyScreen({ onBack }: Props) {
       resetEngine();
     }, 3000);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [livenessState, embeddingReady]);
+  }, [livenessState, embeddingReady, matchScore, matchedId]);
 
   // ── Auto-recover from liveness failure ────────────────────────────────────
 
@@ -248,7 +246,12 @@ export default function VerifyScreen({ onBack }: Props) {
   }
 
   if (!device) {
-    return null;
+    console.log('[DRISHTI_CAMERA_DIAGNOSTICS] VerifyScreen rendering without a valid device.');
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#00FFCC" />
+      </View>
+    );
   }
 
   // ─── Main render ──────────────────────────────────────────────────────────
@@ -267,6 +270,7 @@ export default function VerifyScreen({ onBack }: Props) {
             frameProcessor={frameProcessor}
             pixelFormat="yuv"
             exposure={0.25}
+            onError={() => {}}
           />
         )}
       </View>
@@ -392,6 +396,13 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
 
   // ── Result overlays ────────────────────────────────────────────────────

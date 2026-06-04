@@ -1,4 +1,5 @@
 import { open } from 'react-native-quick-sqlite';
+import { FaceAuthEngine } from '../native/FaceAuthEngine';
 
 // Open a persistent database file on the device
 const db = open({ name: 'drishti_secure.db' });
@@ -245,6 +246,37 @@ export const DatabaseService = {
       }
       return 0;
     } catch { return 0; }
+  },
+
+  /**
+   * Temporary developer-only reset function
+   */
+  resetAllData(): boolean {
+    try {
+      db.execute('DELETE FROM users;');
+      console.log('[DRISHTI_ADMIN] Users cleared');
+
+      db.execute('DELETE FROM attendance;');
+      console.log('[DRISHTI_ADMIN] Attendance cleared');
+
+      // Clear the native state
+      FaceAuthEngine.resetEngine();
+
+      // Reload LSH (effectively clearing it since db is empty)
+      const allUsers = DatabaseService.getAllEmbeddings();
+      allUsers.forEach(u => {
+        if (u.embedding) {
+          FaceAuthEngine.insertProfile(u.id, u.embedding);
+        }
+      });
+      console.log('[DRISHTI_ADMIN] LSH cleared');
+
+      console.log('[DRISHTI_ADMIN] System reset complete');
+      return true;
+    } catch (e) {
+      console.error('[DRISHTI_DB] resetAllData failed:', e);
+      return false;
+    }
   },
 };
 

@@ -139,10 +139,16 @@ export default function EnrollmentScreen({ onBack }: Props) {
     return Math.min(w, h) / Math.max(w, h);
   }, [format]);
 
+  // ── Frame Processor ───────────────────────────────────────────────────────
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet';
     if (faceAuthPlugin == null) return;
-    faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    try {
+      if (!frame.isValid) return;
+      faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    } catch (e) {
+      // Ignore Image is already closed errors during rapid camera transitions
+    }
   }, []);
 
   // Delay camera activation to prevent lifecycle errors on tab switch
@@ -172,6 +178,40 @@ export default function EnrollmentScreen({ onBack }: Props) {
     setPhase('saving');
     phaseRef.current = 'saving';
 
+    // ── Pairwise Consistency Check ───────────────────────────────────────
+    let sumSim = 0;
+    let numPairs = 0;
+    
+    for (let i = 0; i < samples.length; i++) {
+      const s1 = l2Normalize(samples[i]);
+      for (let j = i + 1; j < samples.length; j++) {
+        const s2 = l2Normalize(samples[j]);
+        let sim = 0;
+        for (let k = 0; k < 128; k++) {
+          sim += s1[k] * s2[k];
+        }
+        sumSim += sim;
+        numPairs++;
+      }
+    }
+    
+    const averageSimilarity = numPairs > 0 ? sumSim / numPairs : 0;
+    console.log('[DRISHTI_ENROLL] Average Similarity: ' + averageSimilarity);
+    
+    if (averageSimilarity < 0.65) {
+      console.warn('[DRISHTI_ENROLL] Enrollment quality too low (avg sim: ' + averageSimilarity + ').');
+      setStatusMsg('Enrollment quality too low.\nPlease keep your face centered and try again.');
+      
+      // ── C. ENROLLMENT SAMPLE RETRY ─────────────────────────────────────
+      samplesRef.current = [];
+      setSampleCount(0);
+      setFlashMsg('');
+      isSaving.current = false;
+      setPhase('capturing'); // Restart capture flow instead of erroring out
+      try { FaceAuthEngine.resetEngine(); } catch {}
+      return;
+    }
+
     // ── Average ──────────────────────────────────────────────────────────
     console.log('[DRISHTI_ENROLL] Averaging embeddings');
     const averaged = averageEmbeddings(samples);
@@ -179,6 +219,28 @@ export default function EnrollmentScreen({ onBack }: Props) {
     // ── Normalize ────────────────────────────────────────────────────────
     console.log('[DRISHTI_ENROLL] Normalizing embedding');
     const normalized = l2Normalize(averaged);
+
+    // ── Duplicate Check ──────────────────────────────────────────────────
+    let allEmbeddings = DatabaseService.getAllEmbeddings();
+    let isDuplicate = false;
+    for (const u of allEmbeddings) {
+      let sim = 0;
+      for (let i = 0; i < 128; i++) {
+        sim += normalized[i] * u.embedding[i];
+      }
+      if (sim > 0.85) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    
+    if (isDuplicate) {
+      console.warn('[DRISHTI_ENROLL] Duplicate enrollment blocked.');
+      setPhase('error');
+      setStatusMsg('User already enrolled');
+      isSaving.current = false;
+      return;
+    }
 
     const userId   = generateId();
     const userName = nameRef.current.trim();
@@ -203,7 +265,7 @@ export default function EnrollmentScreen({ onBack }: Props) {
     console.log('[DRISHTI_ENROLL] User saved successfully');
 
     // ── Verify SQLite write ───────────────────────────────────────────────
-    const allEmbeddings = DatabaseService.getAllEmbeddings();
+    allEmbeddings = DatabaseService.getAllEmbeddings();
     console.log('[DRISHTI_DB] User count: ' + allEmbeddings.length);
     console.log('[DRISHTI_DB] User inserted: id=' + userId + ' name="' + userName + '"');
 
@@ -276,6 +338,21 @@ export default function EnrollmentScreen({ onBack }: Props) {
       // Wait for liveness PASS + embedding ready (dual-condition, no dep race)
       if (result.livenessState !== LivenessState.LIVENESS_PASS) return;
       if (!result.embeddingReady) return;
+
+      // ── A. ENROLLMENT QUALITY GATE ──────────────────────────────────────
+      if (Math.abs(result.yaw) >= 15 || Math.abs(result.pitch) >= 15) {
+        setFlashMsg('');
+        setStatusMsg('Look straight ahead (yaw/pitch too high)');
+        try { FaceAuthEngine.resetEngine(); } catch {}
+        return;
+      }
+      
+      if (result.ear < 0.15) { // Proxy for "Both eyes visible"
+        setFlashMsg('');
+        setStatusMsg('Keep both eyes open and visible');
+        try { FaceAuthEngine.resetEngine(); } catch {}
+        return;
+      }
 
       // Lock this pass immediately
       captured.current = true;
@@ -450,10 +527,10 @@ export default function EnrollmentScreen({ onBack }: Props) {
   }
 
   if (!device) {
+    console.log('[DRISHTI_CAMERA_DIAGNOSTICS] EnrollmentScreen rendering without a valid device.');
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00FFCC" />
-        <Text style={styles.loadingText}>Initialising camera…</Text>
       </View>
     );
   }
@@ -474,6 +551,7 @@ export default function EnrollmentScreen({ onBack }: Props) {
             frameProcessor={frameProcessor}
             pixelFormat="yuv"
             exposure={0.25}
+            onError={() => {}}
           />
         )}
       </View>
@@ -536,6 +614,12 @@ export default function EnrollmentScreen({ onBack }: Props) {
 const styles = StyleSheet.create({
   container:     { flex: 1, backgroundColor: '#0A0A0F' },
   centered:      { justifyContent: 'center', alignItems: 'center', padding: 32 },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
 
   // ── Header ──────────────────────────────────────────────────────────────
   header: {
@@ -581,13 +665,24 @@ const styles = StyleSheet.create({
   // ── Buttons ─────────────────────────────────────────────────────────────
   primaryBtn: {
     backgroundColor: '#00FFCC',
-    paddingVertical: 16,
-    borderRadius: 16,
+    width: 180,
+    height: 60,
+    borderRadius: 30,
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'center',
+    marginTop: 20,
+    shadowColor: '#00FFCC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   btnDisabled: { opacity: 0.35 },
-  primaryBtnText: { color: '#000', fontWeight: '800', fontSize: 16, letterSpacing: 0.3 },
+  primaryBtnText: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: '700',
+  },
 
   // ── Result screens ───────────────────────────────────────────────────────
   resultCard: { alignItems: 'center', padding: 32 },

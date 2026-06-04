@@ -21,8 +21,8 @@ struct FSMOutput {
 class LivenessFSM {
 public:
   // === THRESHOLDS — calibrated for MediaPipe FaceMesh v2 ===
-  static constexpr float  EAR_BLINK_CLOSE  = 0.20f;  // below = eye closed
-  static constexpr float  EAR_BLINK_OPEN   = 0.25f;  // above = eye re-opened (blink complete)
+  static constexpr float  EAR_BLINK_CLOSE  = 0.24f;  // below = eye closed (more sensitive)
+  static constexpr float  EAR_BLINK_OPEN   = 0.28f;  // above = eye re-opened (blink complete)
   static constexpr float  MAR_SMILE_THRESH = 0.45f;  // above = smile detected
   static constexpr float  YAW_TURN_THRESH  = 13.0f;  // degrees from neutral = turn
   static constexpr float  VARIANCE_PASS    = 0.000002f; // normalized landmark temporal motion

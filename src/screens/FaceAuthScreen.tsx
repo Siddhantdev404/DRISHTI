@@ -88,7 +88,6 @@ export default function FaceAuthScreen() {
     getEmbedding,
     registerProfile,
   } = useFaceAuth();
-
   const cameraAspectRatio = useMemo(() => {
     const videoWidth = format?.videoWidth ?? 4;
     const videoHeight = format?.videoHeight ?? 3;
@@ -137,7 +136,12 @@ export default function FaceAuthScreen() {
       console.log('[DRISHTI] processFaceAuthFrame plugin unavailable');
       return;
     }
-    faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    try {
+      if (!frame.isValid) return;
+      faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+    } catch (e) {
+      // Ignore Image is already closed errors
+    }
   }, []);
 
   useEffect(() => {
@@ -210,10 +214,10 @@ export default function FaceAuthScreen() {
   }
 
   if (!device) {
+    console.log('[DRISHTI_CAMERA_DIAGNOSTICS] FaceAuthScreen rendering without a valid device.');
     return (
-      <View style={styles.centered}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#00FFCC" />
-        <Text style={styles.loadingText}>Initializing camera sensor…</Text>
       </View>
     );
   }
@@ -232,6 +236,7 @@ export default function FaceAuthScreen() {
             frameProcessor={frameProcessor}
             pixelFormat="yuv"
             exposure={0.25}
+            onError={() => {}}
           />
         )}
       </View>
@@ -265,8 +270,8 @@ export default function FaceAuthScreen() {
             <View style={styles.telemetryDot} />
             <Text style={styles.telemetryText}>
               {livenessState === LivenessState.LIVENESS_PASS && matchedId
-                ? `ID: ${matchedId.substring(0, 8)}…`
-                : 'Scanning'}
+                ? `ID: ${matchedId.substring(0, 8)} (Score: ${Number(matchScore).toFixed(3)})`
+                : `Scan Score: ${Number(matchScore).toFixed(3)}`}
             </Text>
           </View>
         )}
@@ -301,6 +306,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#0A0A0F',
     paddingHorizontal: 32,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
   iconText: {
     fontSize: 48,
