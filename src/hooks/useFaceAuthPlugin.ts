@@ -25,9 +25,12 @@ export function useFaceAuthPlugin() {
         const result = processVisionFrame(frame);
         
         if (result) {
+          const w = frame.width;
+          const h = frame.height;
+          const orient = frame.orientation;
           console.log(
-            `[FrameProcessor] WxH: ${frame.width}x${frame.height} | ` +
-            `Orientation: ${frame.orientation} | ` +
+            `[FrameProcessor] WxH: ${w}x${h} | ` +
+            `Orientation: ${orient} | ` +
             `FPS: ${result.nativeFps} | ` +
             `Liveness: ${result.livenessState} | ` +
             `MatchScore: ${result.matchScore}`

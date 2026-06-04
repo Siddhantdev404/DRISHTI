@@ -26,7 +26,7 @@
  *   TURN_RIGHT(4)  → "Turn your head right"
  */
 
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -99,6 +99,14 @@ export default function FaceAuthScreen() {
 
   // ── Boot: Start the C++ inference engine once camera device is available ──
 
+  const [isCameraReady, setIsCameraReady] = useState(false);
+
+  useEffect(() => {
+    // Delay camera activation to prevent lifecycle errors on tab switch
+    const timer = setTimeout(() => setIsCameraReady(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (!device || !hasPermission) return;
 
@@ -164,7 +172,7 @@ export default function FaceAuthScreen() {
 
   const getLivenessPrompt = useCallback((state: LivenessState, challenge: ChallengeType): string => {
     switch (state) {
-      case LivenessState.IDLE: return 'Align your face inside the circle';
+      case LivenessState.IDLE: return 'Align your face in the camera';
       case LivenessState.DETECTED: return 'Face detected — hold still';
       case LivenessState.VARIANCE_CHECK: return 'Analyzing liveness…';
       case LivenessState.CHALLENGE_ACTIVE: return getChallengePrompt(challenge);
@@ -214,16 +222,18 @@ export default function FaceAuthScreen() {
     <View style={styles.container}>
       {/* Active Hardware Camera Stream Layer */}
       <View style={styles.previewStage}>
-        <Camera
-          style={[styles.cameraPreview, { aspectRatio: cameraAspectRatio }]}
-          device={device}
-          format={format}
-          isActive={true}
-          resizeMode="contain"
-          frameProcessor={frameProcessor}
-          pixelFormat="yuv"
-          exposure={0.25}
-        />
+        {isCameraReady && (
+          <Camera
+            style={[styles.cameraPreview, { aspectRatio: cameraAspectRatio }]}
+            device={device}
+            format={format}
+            isActive={true}
+            resizeMode="contain"
+            frameProcessor={frameProcessor}
+            pixelFormat="yuv"
+            exposure={0.25}
+          />
+        )}
       </View>
 
       {/* Semi-transparent vignette overlay */}

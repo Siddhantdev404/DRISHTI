@@ -14,7 +14,7 @@ import { StatusBar, SafeAreaView, StyleSheet, View, Text, ActivityIndicator } fr
 import 'react-native-worklets-core'; 
 import { DatabaseService } from './src/database/DatabaseService';
 import { FaceAuthEngine, ensureFaceAuthInstalled } from './src/native/FaceAuthEngine';
-import FaceAuthScreen from './src/screens/FaceAuthScreen';
+import AppNavigator from './src/components/AppNavigator';
 
 type BootPhase = 'initializing' | 'ready' | 'error';
 
@@ -60,6 +60,9 @@ export default function App() {
           console.log(
             `[DRISHTI] Boot complete. ${loaded} profile(s) loaded into LSHIndex.`
           );
+          console.log(`[DRISHTI_BOOT] Loaded Users: ${storedProfiles.length}`);
+          console.log(`[DRISHTI_BOOT] Loaded Profiles: ${loaded}`);
+          console.log(`[DRISHTI_BOOT] LSH Size: ${loaded}`);
         }
       } catch (error) {
         console.error('[DRISHTI] Boot sequence failed:', error);
@@ -104,7 +107,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      <FaceAuthScreen />
+      <AppNavigator />
     </SafeAreaView>
   );
 }
