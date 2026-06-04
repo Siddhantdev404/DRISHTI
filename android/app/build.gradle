@@ -5,9 +5,9 @@ plugins {
 }
 
 project.ext.react = [
-    entryFile: "../App.tsx",
+    entryFile: "../../index.js",
     bundleInRelease: true,
-    bundleInDebug: true,
+    bundleInDebug: false,
 ]
 
 android {
@@ -102,5 +102,4 @@ dependencies {
 
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-
 

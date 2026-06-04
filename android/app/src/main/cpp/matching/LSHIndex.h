@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <shared_mutex>
+#include <mutex>
 #include <atomic>
 #include <string>
 #include <random>
@@ -11,6 +12,7 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <cstring>
 
 class LSHIndex {
 public:
@@ -47,12 +49,32 @@ public:
     insert_locked(c);
   }
 
+  size_t size() const {
+    std::shared_lock lock(mutex_);
+    return c_embedding_cache_.size();
+  }
+
+  std::vector<std::string> profileIds() const {
+    std::shared_lock lock(mutex_);
+    std::vector<std::string> ids;
+    ids.reserve(c_embedding_cache_.size());
+    for (const auto& entry : c_embedding_cache_) {
+      ids.push_back(entry.first);
+    }
+    std::sort(ids.begin(), ids.end());
+    return ids;
+  }
+
   // Thread-safe remove — called during erasure purge.
   void remove(const std::string& personnelId) {
     std::unique_lock lock(mutex_);
+    auto cached = c_embedding_cache_.find(personnelId);
+    if (cached == c_embedding_cache_.end()) return;
     for (int b = 0; b < NUM_BANDS; b++) {
-      auto key = bandKey(b, projectBand(c_embedding_cache_.at(personnelId).data(), b));
-      auto& bucket = store_[key];
+      auto key = bandKey(b, projectBand(cached->second.data(), b));
+      auto bucketIt = store_.find(key);
+      if (bucketIt == store_.end()) continue;
+      auto& bucket = bucketIt->second;
       bucket.erase(
         std::remove_if(bucket.begin(), bucket.end(),
           [&](const Candidate& x){ return x.personnelId == personnelId; }),
@@ -125,15 +147,25 @@ private:
   }
 
   void insert_locked(const Candidate& c) {
+    Candidate normalized = c;
+    normalize(normalized.embedding);
     for (int b = 0; b < NUM_BANDS; b++) {
-      auto key = bandKey(b, projectBand(c.embedding, b));
+      auto key = bandKey(b, projectBand(normalized.embedding, b));
       auto& bucket = store_[key];
       if ((int)bucket.size() >= BUCKET_CAP) continue;  // overflow protection
-      bucket.push_back(c);
+      bucket.push_back(normalized);
     }
     // Cache embedding for future removal
     std::array<float, DIM> emb;
-    std::memcpy(emb.data(), c.embedding, DIM * sizeof(float));
+    std::memcpy(emb.data(), normalized.embedding, DIM * sizeof(float));
     c_embedding_cache_[c.personnelId] = emb;
+  }
+
+  static void normalize(float* embedding) {
+    float norm = 0.0f;
+    for (int i = 0; i < DIM; i++) norm += embedding[i] * embedding[i];
+    norm = std::sqrt(norm);
+    if (norm <= 1e-6f) return;
+    for (int i = 0; i < DIM; i++) embedding[i] /= norm;
   }
 };

@@ -5,6 +5,7 @@ import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
 import com.mrousavy.camera.frameprocessor.VisionCameraProxy
 
 class FaceAuthFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, Any>?) : FrameProcessorPlugin() {
+    private var frameCount = 0
 
     override fun callback(frame: Frame, params: Map<String, Any>?): Any? {
         val image = frame.image
@@ -20,8 +21,17 @@ class FaceAuthFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String
         val height = image.height
         val stride = yPlane.rowStride
 
+        val rotation = (params?.get("rotation") as? Double)?.toInt() ?: 90
+
         // Directly invoke the C++ native method, bypassing JS entirely for frame processing
-        FaceAuthModule.nativeProcessFrame(buffer, width, height, stride)
+        val accepted = FaceAuthModule.nativeProcessFrame(buffer, width, height, stride, rotation)
+        frameCount++
+        if (frameCount % 30 == 0) {
+            android.util.Log.i(
+                "FaceAuthFrameProcessor",
+                "[DRISHTI_RUNTIME] callback frame=$frameCount accepted=$accepted size=${width}x$height stride=$stride rotation=$rotation"
+            )
+        }
 
         return null
     }

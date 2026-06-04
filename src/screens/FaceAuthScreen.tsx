@@ -26,21 +26,31 @@
  *   TURN_RIGHT(4)  → "Turn your head right"
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   ActivityIndicator,
   Pressable,
-  useWindowDimensions,
 } from 'react-native';
-import { Camera, useCameraDevice, useCameraFormat, Frame } from 'react-native-vision-camera';
+import { Camera, useFrameProcessor, VisionCameraProxy } from 'react-native-vision-camera';
 import { useCameraStream } from '../hooks/useCameraStream';
 import { useFaceAuth } from '../hooks/useFaceAuth';
-import { myFrameProcessor } from '../native/MyFrameProcessor';
-import { LivenessState, ChallengeType, FaceAuthResultJS } from '../native/FaceAuthEngine';
-import { DatabaseService } from '../database/DatabaseService';
+import { LivenessState, ChallengeType } from '../native/FaceAuthEngine';
+
+const faceAuthPlugin = VisionCameraProxy.initFrameProcessorPlugin('processFaceAuthFrame');
+
+function parseOrientationToRotation(orientation: string | undefined): number {
+  'worklet';
+  switch (orientation) {
+    case 'portrait': return 90;
+    case 'landscape-right': return 0;
+    case 'portrait-upside-down': return 270;
+    case 'landscape-left': return 180;
+    default: return 90;
+  }
+}
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -79,6 +89,14 @@ export default function FaceAuthScreen() {
     registerProfile,
   } = useFaceAuth();
 
+  const cameraAspectRatio = useMemo(() => {
+    const videoWidth = format?.videoWidth ?? 4;
+    const videoHeight = format?.videoHeight ?? 3;
+    const tall = Math.max(videoWidth, videoHeight);
+    const wide = Math.min(videoWidth, videoHeight);
+    return wide / tall;
+  }, [format]);
+
   // ── Boot: Start the C++ inference engine once camera device is available ──
 
   useEffect(() => {
@@ -96,20 +114,23 @@ export default function FaceAuthScreen() {
     };
   }, [device, hasPermission, startEngine, stopEngine]);
 
-  console.log("[DRISHTI] FaceAuthScreen rendered. global.processVisionFrame:", !!global.processVisionFrame);
-
-  const frameProcessor = useMemo(() => {
-    return {
-      frameProcessor: myFrameProcessor,
-      type: 'frame-processor'
-    };
+  useEffect(() => {
+    console.log(
+      '[DRISHTI] FaceAuthScreen ready. global.processVisionFrame:',
+      !!global.processVisionFrame,
+      'global.Worklets:',
+      !!global.Worklets,
+    );
   }, []);
 
-  useEffect(() => {
-    console.log('[DEBUG] FrameProcessor asString:', (frameProcessor.frameProcessor as any).asString);
-  }, [frameProcessor]);
-
-  // ... [Other effects omitted for brevity, keeping original logic]
+  const frameProcessor = useFrameProcessor((frame) => {
+    'worklet';
+    if (faceAuthPlugin == null) {
+      console.log('[DRISHTI] processFaceAuthFrame plugin unavailable');
+      return;
+    }
+    faceAuthPlugin.call(frame, { rotation: parseOrientationToRotation(frame.orientation) });
+  }, []);
 
   useEffect(() => {
     if (livenessState !== LivenessState.LIVENESS_PASS) return;
@@ -192,15 +213,16 @@ export default function FaceAuthScreen() {
   return (
     <View style={styles.container}>
       {/* Active Hardware Camera Stream Layer */}
-      <View style={{ flex: 1, backgroundColor: 'black', justifyContent: 'center' }}>
+      <View style={styles.previewStage}>
         <Camera
-          style={{ flex: 1 }}
+          style={[styles.cameraPreview, { aspectRatio: cameraAspectRatio }]}
           device={device}
           format={format}
           isActive={true}
           resizeMode="contain"
           frameProcessor={frameProcessor}
           pixelFormat="yuv"
+          exposure={0.25}
         />
       </View>
 
@@ -249,6 +271,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  previewStage: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  cameraPreview: {
+    width: '100%',
+    maxHeight: '100%',
   },
 
   // ── Fallback States ────────────────────────────────────────────────────

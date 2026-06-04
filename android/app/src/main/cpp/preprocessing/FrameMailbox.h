@@ -17,7 +17,7 @@ struct FrameData {
 
 class FrameMailbox {
 public:
-    static constexpr int MAX_Y_PLANE_BYTES = 1920 * 1080;
+    static constexpr int MAX_Y_PLANE_BYTES = 4096 * 3072;
 
     FrameMailbox()
         : slotFlag_(0),

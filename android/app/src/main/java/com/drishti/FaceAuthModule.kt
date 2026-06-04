@@ -43,7 +43,7 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
          * @param callInvokerHolder Java-side CallInvokerHolder for thread-safe JS invocations
          */
         @JvmStatic
-        external fun nativeInstall(jsiRuntimePtr: Long, callInvokerHolder: Any, modelPath: String)
+        external fun nativeInstall(jsiRuntimePtr: Long, callInvokerHolder: Any, faceMeshPath: String, mobileFaceNetPath: String)
 
         /**
          * JNI entry point → Java_com_drishti_FaceAuthModule_nativeCleanup
@@ -58,7 +58,7 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
          * JNI entry point → Java_com_drishti_FaceAuthModule_nativeProcessFrame
          */
         @JvmStatic
-        external fun nativeProcessFrame(buffer: java.nio.ByteBuffer, width: Int, height: Int, stride: Int)
+        external fun nativeProcessFrame(buffer: java.nio.ByteBuffer, width: Int, height: Int, stride: Int, rotation: Int): Boolean
     }
 
     override fun getName(): String = NAME
@@ -92,20 +92,24 @@ class FaceAuthModule(reactContext: ReactApplicationContext) :
             // Extract the CallInvokerHolder so C++ can schedule callbacks onto the JS thread
             val callInvokerHolder = catalystInstance.jsCallInvokerHolder
 
-            // Copy OpenCV Haar Cascade from assets to cache dir for C++ access
-            val modelFilename = "haarcascade.xml"
-            val modelFile = java.io.File(context.cacheDir, modelFilename)
-            if (!modelFile.exists()) {
-                context.assets.open(modelFilename).use { input ->
-                    java.io.FileOutputStream(modelFile).use { output ->
-                        input.copyTo(output)
+            // Copy TFLite models from assets to cache dir for C++ access
+            fun copyAssetToCache(filename: String): String {
+                val file = java.io.File(context.cacheDir, filename)
+                if (!file.exists()) {
+                    context.assets.open("models/$filename").use { input ->
+                        java.io.FileOutputStream(file).use { output ->
+                            input.copyTo(output)
+                        }
                     }
                 }
+                return file.absolutePath
             }
-            val modelPath = modelFile.absolutePath
 
-            // Forward both handles and model path to the C++ JNI layer
-            nativeInstall(jsContext, callInvokerHolder, modelPath)
+            val faceMeshPath = copyAssetToCache("face_mesh_v2.tflite")
+            val mobileFaceNetPath = copyAssetToCache("mobilefacenet_int8.tflite")
+
+            // Forward handles and model paths to the C++ JNI layer
+            nativeInstall(jsContext, callInvokerHolder, faceMeshPath, mobileFaceNetPath)
 
             android.util.Log.i(NAME, "JSI bindings installed successfully")
             true

@@ -10,12 +10,12 @@ include(${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
 set(OpenCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/OpenCV-android-sdk/sdk/native/jni")
 find_package(OpenCV REQUIRED)
 
-# TensorFlow Lite Configuration (Temporarily disabled)
-# set(TFLITE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/tflite")
-# set(TENSORFLOW_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/tensorflow")
-# add_library(tensorflowlite_c SHARED IMPORTED)
-# set_target_properties(tensorflowlite_c PROPERTIES IMPORTED_LOCATION
-#     ${TFLITE_DIR}/jni/${ANDROID_ABI}/libtensorflowlite_jni.so)
+# TensorFlow Lite Configuration
+set(TFLITE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/tflite")
+set(TENSORFLOW_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/tensorflow")
+add_library(tensorflowlite_c SHARED IMPORTED)
+set_target_properties(tensorflowlite_c PROPERTIES IMPORTED_LOCATION
+    ${TFLITE_DIR}/jni/${ANDROID_ABI}/libtensorflowlite_jni.so)
 
 target_sources(${PROJECT_NAME} PRIVATE
     face_auth_plugin.cpp
@@ -50,6 +50,7 @@ target_link_libraries(${PROJECT_NAME}
     log
     fbjni::fbjni
     ${OpenCV_LIBS}
+    tensorflowlite_c
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")

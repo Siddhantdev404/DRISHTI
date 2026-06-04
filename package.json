@@ -1,7 +1,7 @@
 {
   "name": "drishti",
   "version": "1.0.0",
-  "main": "App.tsx",
+  "main": "index.js",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

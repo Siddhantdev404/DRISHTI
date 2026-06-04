@@ -31,92 +31,29 @@
  * Only synchronous JSI globals installed on the JS runtime are accessible.
  */
 
-import type { Frame } from 'react-native-vision-camera';
+import { VisionCameraProxy, type Frame } from 'react-native-vision-camera';
 
-// ─── Orientation Rotation Matrix ─────────────────────────────────────────────
+const plugin = VisionCameraProxy.initFrameProcessorPlugin('processFaceAuthFrame');
 
-/**
- * Translates Vision Camera orientation string identifiers into explicit integer
- * angle degrees for the C++ engine's face landmark coordinate transformations.
- *
- * The camera HAL reports orientation as a semantic string. The C++ preprocessing
- * layer (AdaptiveClahe) and face landmark detector require a numeric rotation
- * value to correctly orient the YUV frame data before processing.
- *
- * Rotation degrees follow the standard Android camera coordinate convention:
- *   - 0°   = landscape-right (sensor natural orientation)
- *   - 90°  = portrait (most common handheld orientation)
- *   - 180° = landscape-left (upside-down landscape)
- *   - 270° = portrait-upside-down
- *
- * @param orientation - Vision Camera orientation string from frame.orientation
- * @returns Integer rotation angle in degrees (0, 90, 180, 270)
- */
 function parseOrientationToRotation(orientation: string): number {
   'worklet';
   switch (orientation) {
-    case 'portrait':
-      return 90;
-    case 'landscape-right':
-      return 0;
-    case 'portrait-upside-down':
-      return 270;
-    case 'landscape-left':
-      return 180;
-    default:
-      // Fallback to portrait — the most common user orientation for face auth
-      return 90;
+    case 'portrait': return 90;
+    case 'landscape-right': return 0;
+    case 'portrait-upside-down': return 270;
+    case 'landscape-left': return 180;
+    default: return 90;
   }
 }
 
-// ─── Frame Processor Worklet ─────────────────────────────────────────────────
-
-/**
- * Primary frame processor worklet invoked by Vision Camera on every captured
- * video frame from the front-facing camera hardware sensor.
- *
- * This function:
- *   1. Extracts the raw Y-plane luminance pixel data as an ArrayBuffer
- *      via Vision Camera's zero-copy JSI allocation layer (no memcpy)
- *   2. Computes the rotation angle from the orientation string
- *   3. Calculates the row stride to account for camera HAL memory padding
- *   4. Posts the raw buffer directly into the C++ FrameMailbox via the
- *      synchronous JSI global `processVisionFrame()`
- *
- * Performance characteristics:
- *   - Zero-copy: frame.toArrayBuffer() returns a JSI ArrayBuffer backed by
- *     the same native memory — no data duplication
- *   - Synchronous: the JSI call completes in <0.1ms (just a mailbox post)
- *   - Off-thread: the 'worklet' directive ensures this runs on the native
- *     camera thread, never blocking React Native UI rendering
- *
- * @param frame - Vision Camera Frame object with raw pixel access
- * @returns true if the frame was accepted by the FrameMailbox, false otherwise
- */
-export function processFaceAuthFrame(frame: Frame): boolean {
+export function processFaceAuthFrame(frame: Frame): void {
   'worklet';
 
-    // 1. Extract raw hardware frame geometry
-    const width = frame.width;
-    const height = frame.height;
+  if (plugin == null) {
+    console.log("[DRISHTI] Failed to load Frame Processor Plugin processFaceAuthFrame!");
+    return;
+  }
 
-    const orientation = frame.orientation;
-    const _rotation = parseOrientationToRotation(orientation);
-
-    const frameBuffer = frame.toArrayBuffer();
-
-    if (!frameBuffer) {
-      console.log("[DRISHTI] Frame Buffer is null!");
-      return false;
-    }
-
-    const stride = Math.floor(frameBuffer.byteLength / height);
-
-    if (typeof global.processVisionFrame !== 'function') {
-      console.error("[DRISHTI] FATAL: global.processVisionFrame is undefined inside the worklet runtime!");
-      return false;
-    }
-
-    // @ts-ignore
-    return global.processVisionFrame(frameBuffer, width, height, stride);
+  const rot = parseOrientationToRotation(frame.orientation);
+  plugin.call(frame, { rotation: rot });
 }

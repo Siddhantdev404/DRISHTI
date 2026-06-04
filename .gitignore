@@ -35,3 +35,13 @@ ios/Index/
 .DS_Store
 .vscode/
 .idea/
+
+
+all_logs.txt
+*.zip
+
+
+# Ignore specific massive files
+*.zip
+*logcat*.txt
+index.bundle.js

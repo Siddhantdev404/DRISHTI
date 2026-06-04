@@ -17,13 +17,36 @@
 import { NativeModules } from 'react-native';
 
 const { FaceAuthModule } = NativeModules;
+let installSucceeded = false;
 
-if (FaceAuthModule && typeof FaceAuthModule.install === 'function') {
-  const installed = FaceAuthModule.install();
-  console.log('[DRISHTI] FaceAuthModule.install() returned:', installed);
-} else {
-  console.error('[DRISHTI] FaceAuthModule not found in NativeModules! Cannot install JSI bindings.');
+export function ensureFaceAuthInstalled(): boolean {
+  if (typeof global.startFaceAuthEngine === 'function') {
+    installSucceeded = true;
+    return true;
+  }
+
+  if (installSucceeded) {
+    return true;
+  }
+
+  if (!FaceAuthModule || typeof FaceAuthModule.install !== 'function') {
+    console.error('[DRISHTI] FaceAuthModule not found in NativeModules.');
+    console.log('[DRISHTI] NativeModules keys:', Object.keys(NativeModules).filter(k => k.includes('Face')));
+    return false;
+  }
+
+  try {
+    installSucceeded = FaceAuthModule.install() === true;
+    console.log('[DRISHTI] FaceAuthModule.install() returned:', installSucceeded);
+    console.log('[DRISHTI] Global keys after install:', Object.keys(global).filter(k => k.includes('Face')));
+    return installSucceeded;
+  } catch (error) {
+    installSucceeded = false;
+    console.error('[DRISHTI] FaceAuthModule.install() threw:', error);
+    return false;
+  }
 }
+
 
 export enum LivenessState {
   IDLE = 0,
@@ -116,6 +139,7 @@ declare global {
 const EMBEDDING_BYTE_LENGTH = 512; // 128 floats × 4 bytes
 
 function assertJSIAvailable(): void {
+  ensureFaceAuthInstalled();
   if (typeof global.startFaceAuthEngine !== 'function') {
     throw new Error(
       '[DRISHTI] FaceAuth JSI bindings are not installed. ' +

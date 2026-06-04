@@ -74,7 +74,7 @@ struct VarianceAccumulator {
 
         frameIndex++;
         if (frameIndex >= MAX_FRAMES) {
-            frameIndex = MAX_FRAMES;
+            frameIndex = 0;
             filled = true;
         }
     }

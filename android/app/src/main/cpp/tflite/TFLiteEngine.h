@@ -7,6 +7,8 @@
 
 // No LOG_TAG redefine
 
+#include "tensorflow/lite/c/c_api.h"
+
 namespace drishti {
 
 struct BoundingBox {
@@ -19,12 +21,22 @@ public:
     TFLiteEngine() = default;
     ~TFLiteEngine();
 
-    bool loadModel(const std::string& modelPath);
+    bool loadModel(const std::string& faceMeshPath, const std::string& mobileFaceNetPath);
     
-    // Run BlazeFace detection and return the best bounding box
-    std::vector<BoundingBox> detectFaces(const cv::Mat& rgbImage);
+    // Run FaceMesh inference and return landmarks
+    bool executeFaceMesh(const cv::Mat& rgbImage, float* outLandmarks, float& outConfidence);
 
-    // Stub
+    // Run MobileFaceNet to get embeddings
+    bool executeMobileFaceNet(const cv::Mat& alignedFace, std::vector<float>& outEmbedding);
+
+private:
+    TfLiteModel* faceMeshModel_ = nullptr;
+    TfLiteInterpreter* faceMeshInterpreter_ = nullptr;
+    TfLiteInterpreterOptions* faceMeshOptions_ = nullptr;
+
+    TfLiteModel* faceNetModel_ = nullptr;
+    TfLiteInterpreter* faceNetInterpreter_ = nullptr;
+    TfLiteInterpreterOptions* faceNetOptions_ = nullptr;
 };
 
 } // namespace drishti

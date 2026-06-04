@@ -9,17 +9,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StatusBar, SafeAreaView, StyleSheet, View, Text, ActivityIndicator, AppRegistry, NativeModules } from 'react-native';
-
-// Force safety fallbacks on the Javascript global execution context before any native imports load
-if (global != null) {
-  // Disables the Bridgeless Registry hijacking on the active JS thread thread map
-  (global as any).__turboModuleProxy = (global as any).__turboModuleProxy || null;
-}
+import { StatusBar, SafeAreaView, StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 
 import 'react-native-worklets-core'; 
 import { DatabaseService } from './src/database/DatabaseService';
-import { FaceAuthEngine } from './src/native/FaceAuthEngine';
+import { FaceAuthEngine, ensureFaceAuthInstalled } from './src/native/FaceAuthEngine';
 import FaceAuthScreen from './src/screens/FaceAuthScreen';
 
 type BootPhase = 'initializing' | 'ready' | 'error';
@@ -35,7 +29,7 @@ export default function App() {
     function boot() {
       try {
         // ── Step 0: Synchronously install JSI bindings on the JS Thread ──
-        const installed = NativeModules.FaceAuthModule.install();
+        const installed = ensureFaceAuthInstalled();
         if (!installed) {
           throw new Error("Failed to install FaceAuthModule JSI bindings.");
         }
@@ -148,7 +142,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
 });
-
-// Explicit registration matching your main application config keys seamlessly
-AppRegistry.registerComponent('drishti', () => App);
-AppRegistry.registerComponent('MainApplication', () => App);

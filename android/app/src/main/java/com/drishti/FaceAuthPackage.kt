@@ -18,9 +18,10 @@ class FaceAuthPackage : ReactPackage {
     override fun createNativeModules(
         reactContext: ReactApplicationContext
     ): List<NativeModule> {
-        FrameProcessorPluginRegistry.addFrameProcessorPlugin("processFaceAuthFrame") { proxy, options ->
+        try { FrameProcessorPluginRegistry.addFrameProcessorPlugin("processFaceAuthFrame") { proxy, options ->
             FaceAuthFrameProcessorPlugin(proxy, options)
         }
+        } catch (e: Throwable) {} // Ignore if already registered
         val module = FaceAuthModule(reactContext)
         return listOf(module)
     }
