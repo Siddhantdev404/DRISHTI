@@ -214,9 +214,9 @@ A successful link will output `BUILD SUCCESSFUL` with `face_auth_engine` shared 
 
 ## 📸 Screenshots & Demo
 
-> *(Insert Android Profiler flatline heap capture and green-ring authentication success screenshots here)*
 
-**Demo Video:** [🎬 Watch the Flight Mode Biometric Verification & AWS Sync Workflow](#)
+
+** Screenshots and Demo Video:** [ https://drive.google.com/drive/folders/1ZvhjtQoYtIoXH3S-dNA_iQB8px9Hq1hN](#)
 
 ---
 
